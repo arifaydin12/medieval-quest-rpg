@@ -1,301 +1,78 @@
 <!DOCTYPE html>
-<html lang="tr">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medieval Quest - Gelişmiş RPG</title>
+    <meta name="description" content="Medieval Quest: a browser role-playing game with quests, turn-based combat, crafting and a living world.">
+    <meta name="theme-color" content="#0d0b09">
+    <title>Medieval Quest - Play</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%9C%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
 </head>
-
-<body>
-    <canvas id="particle-canvas"></canvas>
-
-    <!-- Ana Menü -->
-    <div id="main-menu" class="screen active">
-        <div class="hero-content">
-            <h1 class="main-title font-medieval">Medieval Quest</h1>
-            <p class="subtitle">
-                Krallığın kaderi senin ellerinde. Efsaneni yazmaya hazır mısın?
-            </p>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="continueLatestGame()">✨ Maceraya Devam Et</button>
-                <button class="btn btn-secondary" onclick="openLoadGameModal()">💾 Kayıtlı Oyunlar</button>
-                <button class="btn btn-info" onclick="openSettings()">⚙️ Ayarlar</button>
-            </div>
-
-            <!-- Hızlı İstatistikler -->
-            <div class="quick-stats">
-                <div class="stat-card">
-                    <h3>Toplam Oynama Süresi</h3>
-                    <p id="total-playtime">0 saat</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Tamamlanan Görevler</h3>
-                    <p id="completed-quests">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Kazanılan Başarımlar</h3>
-                    <p id="earned-achievements">0/50</p>
-                </div>
-            </div>
-        </div>
+<body data-screen="title">
+    <a class="skip-link" href="#scene">Skip to the game</a>
+    <div id="boot" class="boot" role="status" aria-live="polite">
+        <div class="boot-inner"><div class="spinner" aria-hidden="true"></div><p class="font-title">Loading the realm...</p></div>
     </div>
+    <noscript><div class="noscript">Medieval Quest needs JavaScript to run. Please enable it and reload the page.</div></noscript>
 
-    <!-- Oyun Arayüzü -->
-    <div id="game-container" class="hidden">
-        <nav class="nav-bar">
-            <!-- Dinamik olarak doldurulacak -->
+    <!-- Title screen -->
+    <main id="title-screen" class="title-screen">
+        <div class="title-card">
+            <p class="title-kicker font-title">A role-playing adventure</p>
+            <h1 class="title-name font-title">Medieval Quest</h1>
+            <p class="title-tag">Forge your destiny in a realm of steel, shadow and stone.</p>
+            <div class="title-menu">
+                <button id="btn-continue" class="btn btn-gold btn-big" data-action="continue" disabled></button>
+                <button class="btn btn-big" data-action="start-new"><span aria-hidden="true">✨</span> New Game</button>
+                <div class="title-row">
+                    <button class="btn" data-action="open-load"><span aria-hidden="true">📂</span> Load</button>
+                    <button class="btn" data-action="open-settings"><span aria-hidden="true">⚙️</span> Settings</button>
+                    <button class="btn" data-action="open-help"><span aria-hidden="true">❓</span> How to Play</button>
+                </div>
+            </div>
+            <dl class="title-stats" aria-label="Lifetime statistics">
+                <div><dt>Time played</dt><dd id="stat-playtime">0m</dd></div>
+                <div><dt>Quests completed</dt><dd id="stat-quests">0</dd></div>
+                <div><dt>Achievements</dt><dd id="stat-achievements">0/8</dd></div>
+            </dl>
+            <a class="back-link" href="index.html">← Back to the landing page</a>
+        </div>
+    </main>
+
+    <!-- Game -->
+    <div id="game" class="game" hidden data-panel="scene">
+        <header id="topbar" class="topbar"></header>
+        <div class="game-grid">
+            <section id="panel-hero" class="panel panel-hero" data-panel-id="hero" aria-label="Hero"></section>
+            <main id="scene" class="panel panel-scene" data-panel-id="scene" aria-label="Current location"></main>
+            <aside class="col-right">
+                <section class="panel panel-quests" data-panel-id="quests" aria-labelledby="quests-h">
+                    <h2 id="quests-h" class="panel-title font-title">Quests</h2>
+                    <div id="panel-quests-body"></div>
+                </section>
+                <section class="panel panel-log" data-panel-id="log" aria-labelledby="log-h">
+                    <h2 id="log-h" class="panel-title font-title">Chronicle</h2>
+                    <div id="panel-log-body"></div>
+                </section>
+            </aside>
+        </div>
+        <nav class="tabbar" aria-label="Game panels">
+            <button data-action="panel" data-panel="scene" aria-pressed="true"><span aria-hidden="true">🏰</span>Place</button>
+            <button data-action="panel" data-panel="hero" aria-pressed="false"><span aria-hidden="true">🧙</span>Hero</button>
+            <button data-action="panel" data-panel="quests" aria-pressed="false"><span aria-hidden="true">📜</span>Quests</button>
+            <button data-action="panel" data-panel="log" aria-pressed="false"><span aria-hidden="true">🕯️</span>Log</button>
         </nav>
-
-        <main id="game-screen" class="screen game-screen">
-            <div class="sidebar" id="left-sidebar">
-                <!-- Karakter bilgileri -->
-            </div>
-
-            <div class="game-area" id="center-game-area">
-                <!-- Lokasyon ve eylemler -->
-            </div>
-
-            <div class="right-panel" id="right-panel">
-                <!-- Görevler ve bilgiler -->
-            </div>
-        </main>
+        <div id="save-indicator" class="save-indicator" role="status" aria-live="polite"></div>
     </div>
 
-    <!-- Modal Pencereler -->
-    <div id="load-game-modal" class="modal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h2 class="modal-title font-medieval">Kayıtlı Maceralar</h2>
-                <button class="close-btn" onclick="closeLoadGameModal()">&times;</button>
-            </div>
-            <div id="save-slots-container"></div>
-        </div>
-    </div>
-
-    <!-- Gelişmiş Karakter Yaratma -->
-    <div id="character-creation-modal" class="modal">
-        <div class="modal-content extra-large">
-            <div class="modal-header">
-                <h2 class="modal-title font-medieval">Efsaneni Yarat</h2>
-                <button class="close-btn" onclick="closeCharacterCreationModal()">&times;</button>
-            </div>
-
-            <div class="creation-steps">
-                <div class="step-indicator">
-                    <span class="step active" data-step="1">İsim & Irk</span>
-                    <span class="step" data-step="2">Sınıf</span>
-                    <span class="step" data-step="3">Geçmiş</span>
-                    <span class="step" data-step="4">Onay</span>
-                </div>
-
-                <div id="character-creation-content">
-                    <!-- Adım 1: İsim ve Irk -->
-                    <div class="creation-step active" id="step-1">
-                        <div class="form-group">
-                            <label for="character-name-input">Kahramanın Adı</label>
-                            <input type="text" id="character-name-input" placeholder="Unutulmaz bir isim seç...">
-                        </div>
-
-                        <h3 class="font-medieval">Irk Seçimi</h3>
-                        <div class="race-selection">
-                            <div class="race-card" data-race="human">
-                                <div class="race-icon">👨</div>
-                                <h4>İnsan</h4>
-                                <p>Uyum yeteneği yüksek, çok yönlü</p>
-                                <div class="race-bonuses">
-                                    <span>+1 Tüm Beceriler</span>
-                                    <span>+10% XP Kazanımı</span>
-                                </div>
-                            </div>
-
-                            <div class="race-card" data-race="elf">
-                                <div class="race-icon">🧝</div>
-                                <h4>Elf</h4>
-                                <p>Doğa ile uyumlu, keskin nişancı</p>
-                                <div class="race-bonuses">
-                                    <span>+3 Çeviklik</span>
-                                    <span>Okçuluk Ustalığı</span>
-                                </div>
-                            </div>
-
-                            <div class="race-card" data-race="dwarf">
-                                <div class="race-icon">🧔</div>
-                                <h4>Cüce</h4>
-                                <p>Dayanıklı, zanaatkâr ruhlu</p>
-                                <div class="race-bonuses">
-                                    <span>+3 Dayanıklılık</span>
-                                    <span>Zırh Ustalığı</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Diğer adımlar buraya eklenecek -->
-                </div>
-
-                <div class="creation-navigation">
-                    <button class="btn btn-secondary" onclick="previousCreationStep()">Geri</button>
-                    <button class="btn btn-primary" onclick="nextCreationStep()">İleri</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gelişmiş Görev Defteri -->
-    <div id="quest-journal-modal" class="modal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h2 class="modal-title font-medieval">Görev Defteri</h2>
-                <button class="close-btn" onclick="closeQuestJournal()">&times;</button>
-            </div>
-
-            <div class="quest-tabs">
-                <button class="tab-btn active" data-tab="active">Aktif Görevler</button>
-                <button class="tab-btn" data-tab="completed">Tamamlananlar</button>
-                <button class="tab-btn" data-tab="failed">Başarısızlar</button>
-            </div>
-
-            <div id="quest-journal-content"></div>
-        </div>
-    </div>
-
-    <!-- GÖRSEL SAVAŞ EKRANI MODALI -->
-    <div id="combat-modal" class="modal">
-        <div class="modal-content large combat-content">
-            <div class="modal-header">
-                <h2 class="modal-title font-medieval" id="combat-title">Savaş!</h2>
-                <!-- Kapatma butonu yok, savaş bitmeden çıkılmaz -->
-            </div>
-
-            <div class="combat-arena">
-                <!-- Oyuncu Tarafı -->
-                <div class="combatant player-side">
-                    <div class="combat-portrait player-portrait">
-                        👤
-                    </div>
-                    <div class="combat-stats">
-                        <h3 id="combat-player-name">Kahraman</h3>
-                        <div class="bar-container health-bar-container">
-                            <div class="bar-fill health-bar" id="combat-player-hp" style="width: 100%;"></div>
-                            <span class="bar-text" id="combat-player-hp-text">100/100</span>
-                        </div>
-                        <div class="energy-pips" id="combat-player-energy">
-                            <!-- Enerji/Stamina göstergeleri -->
-                            <span class="pip active">⚡</span><span class="pip active">⚡</span><span
-                                class="pip active">⚡</span>
-                        </div>
-                    </div>
-                    <div class="damage-indicator" id="player-damage-indicator"></div>
-                </div>
-
-                <!-- VS -->
-                <div class="combat-vs font-medieval">VS</div>
-
-                <!-- Düşman Tarafı -->
-                <div class="combatant enemy-side">
-                    <div class="combat-portrait enemy-portrait" id="combat-enemy-icon">
-                        👹
-                    </div>
-                    <div class="combat-stats">
-                        <h3 id="combat-enemy-name">Düşman</h3>
-                        <div class="bar-container health-bar-container">
-                            <div class="bar-fill health-bar" id="combat-enemy-hp" style="width: 100%;"></div>
-                            <span class="bar-text" id="combat-enemy-hp-text">100/100</span>
-                        </div>
-                        <div class="energy-pips" id="combat-enemy-energy">
-                            <span class="pip active">💀</span><span class="pip active">💀</span><span
-                                class="pip active">💀</span>
-                        </div>
-                    </div>
-                    <div class="damage-indicator" id="enemy-damage-indicator"></div>
-                </div>
-            </div>
-
-            <div class="combat-log" id="combat-log-display">
-                <!-- Savaş günlüğü -->
-                <p>Savaş başlıyor...</p>
-            </div>
-
-            <div class="combat-actions">
-                <button class="btn btn-primary" onclick="combatAction('attack')">⚔️ Saldır</button>
-                <button class="btn btn-secondary" onclick="combatAction('defend')">🛡️ Savun</button>
-                <button class="btn btn-info" onclick="combatAction('item')">🧪 Eşya</button>
-                <button class="btn btn-danger" onclick="combatAction('flee')">🏃 Kaç</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TÜCCAR / DÜKKAN MODALI -->
-    <div id="merchant-modal" class="modal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h2 class="modal-title font-medieval" id="merchant-title">Dükkan</h2>
-                <button class="close-btn" onclick="closeMerchantModal()">&times;</button>
-            </div>
-
-            <div class="merchant-layout">
-                <div class="merchant-keeper">
-                    <div class="merchant-portrait">👳</div>
-                    <p class="merchant-quote">"En iyi mallar bende, dostum!"</p>
-                    <div class="player-gold-display">
-                        💰 Senin Altının: <span id="player-gold-amount">0</span>
-                    </div>
-                </div>
-
-                <div class="shop-tabs">
-                    <button class="tab-btn active" onclick="switchShopTab('buy')">Satın Al</button>
-                    <button class="tab-btn" onclick="switchShopTab('sell')">Sat</button>
-                </div>
-
-                <div class="shop-items-grid" id="shop-items-container">
-                    <!-- Eşyalar buraya gelecek -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gelişmiş Envanter Sistemi -->
-    <div id="inventory-modal" class="modal">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h2 class="modal-title font-medieval">Envanter & Ekipman</h2>
-                <button class="close-btn" onclick="closeInventory()">&times;</button>
-            </div>
-
-            <div class="inventory-layout">
-                <div class="equipment-slots">
-                    <!-- Ekipman yuvaları -->
-                </div>
-
-                <div class="inventory-grid-container">
-                    <div class="inventory-controls">
-                        <input type="text" placeholder="Eşya ara..." id="item-search">
-                        <select id="item-filter">
-                            <option value="all">Tüm Eşyalar</option>
-                            <option value="weapon">Silahlar</option>
-                            <option value="armor">Zırhlar</option>
-                            <option value="consumable">Tüketilebilirler</option>
-                            <option value="quest">Görev Eşyaları</option>
-                        </select>
-                    </div>
-
-                    <div class="inventory-grid" id="inventory-items"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Diğer modal pencereler... -->
+    <div id="modal-root"></div>
+    <div id="toast-root" class="toast-root" role="status" aria-live="polite"></div>
 
     <script src="gamedata.js"></script>
-    <script src="system.js"></script>
     <script src="audio.js"></script>
+    <script src="system.js"></script>
+    <script src="ui.js"></script>
     <script src="main.js"></script>
 </body>
-
 </html>

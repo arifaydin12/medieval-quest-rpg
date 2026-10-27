@@ -3,61 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Medieval Quest: a browser role-playing game with character creation, quests, turn-based combat, crafting and a living medieval world. No install, no build step.">
+    <meta name="theme-color" content="#0d0b09">
+    <meta property="og:title" content="Medieval Quest">
+    <meta property="og:description" content="Forge your destiny in a realm of steel, shadow and stone. A browser RPG.">
+    <meta property="og:image" content="docs/screenshot.png">
     <title>Medieval Quest - A Role-Playing Adventure</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%9C%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body class="landing-page-body">
-    <canvas id="particle-canvas"></canvas>
-    
-    <div class="landing-container">
-        <h1 class="main-title font-medieval">Medieval Quest</h1>
-        <p class="subtitle">Forge your destiny in a world of steel, shadow, and stone.</p>
-        <a href="game.html" class="btn btn-primary btn-large">
-            ENTER WORLD
-        </a>     
-    </div>
+<body class="landing-body">
+    <canvas id="embers" aria-hidden="true"></canvas>
 
-    <script>
-        // A simplified particle script for the landing page
-        document.addEventListener('DOMContentLoaded', () => {
-            const canvas = document.getElementById('particle-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            let particles = [];
+    <header class="landing-hero">
+        <p class="title-kicker font-title">A role-playing adventure</p>
+        <h1 class="title-name font-title">Medieval Quest</h1>
+        <p class="landing-tag">Forge your destiny in a realm of steel, shadow and stone.</p>
+        <div class="landing-cta">
+            <a href="game.html" class="btn btn-gold btn-big">Enter the Realm</a>
+            <a href="https://github.com/vaas125/medieval-quest-rpg" class="btn btn-big" rel="noopener">View the source</a>
+        </div>
+    </header>
 
-            for (let i = 0; i < 50; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5,
-                    size: Math.random() * 2 + 1,
-                    opacity: Math.random() * 0.5 + 0.2
-                });
-            }
+    <main class="landing-main">
+        <section class="landing-features" aria-label="Features">
+            <article><span aria-hidden="true">🧙</span><h2 class="font-title">Make your hero</h2><p>Four races, four classes and four backgrounds, each changing your attributes, gear and abilities.</p></article>
+            <article><span aria-hidden="true">📜</span><h2 class="font-title">Live the story</h2><p>A main story with four endings and a handful of side quests, with choices that move the factions of the realm.</p></article>
+            <article><span aria-hidden="true">⚔️</span><h2 class="font-title">Fight turn by turn</h2><p>Class abilities, status effects, critical hits, bosses and a combat log with floating damage numbers.</p></article>
+            <article><span aria-hidden="true">⚒️</span><h2 class="font-title">Trade and craft</h2><p>Buy and sell with merchants, forge weapons and armour, brew potions and equip rare loot.</p></article>
+            <article><span aria-hidden="true">🗺️</span><h2 class="font-title">Explore the wilds</h2><p>Eight locations, day and night, random events, ambushes and a world map of the kingdom.</p></article>
+            <article><span aria-hidden="true">💾</span><h2 class="font-title">Never lose progress</h2><p>Autosave plus three save slots, all stored in your browser. Works on desktop and phone.</p></article>
+        </section>
 
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(214, 158, 46, ${p.opacity})`;
-                    ctx.fill();
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            });
-        });
-    </script>
+        <section class="landing-shot">
+            <img src="docs/gameplay.png" alt="Screenshot of the game showing a location, the hero panel and the quest tracker" width="1440" height="900" loading="lazy">
+        </section>
+    </main>
+
+    <footer class="landing-footer">
+        <p>Medieval Quest is open source under the MIT licence. Built with plain HTML, CSS and JavaScript.</p>
+    </footer>
+    <script src="landing.js"></script>
 </body>
+</html>
