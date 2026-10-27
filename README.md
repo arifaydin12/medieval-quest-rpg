@@ -4,7 +4,7 @@ A browser role-playing game set in the kingdom of Aethelgard: create a hero, tak
 
 ![Medieval Quest landing page](docs/screenshot.png)
 
-**[Play it in the browser](https://vaas125.github.io/medieval-quest-rpg/)**
+**[Play it in the browser](https://arifaydin12.github.io/medieval-quest-rpg/)**
 
 | Character creation | Exploring |
 | --- | --- |
